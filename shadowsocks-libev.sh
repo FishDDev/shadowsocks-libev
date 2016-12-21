@@ -52,6 +52,7 @@ if ! wget "${ss_libev_url}" -O "${tmp_dir}/${ss_libev}.zip"; then
 fi
 
 # /etc/shadowsocks-libev/config.json
+mkdir -p /etc/shadowsocks-libev
 if ! wget "${ss_libev_config_url}" -O "${ss_libev_config}"; then 
     echo -e "${red}Error:${plain} Failed to download ${ss_libev_config}"
 fi
