@@ -44,7 +44,7 @@ ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ntpdate 1.cn.pool.ntp.org
 }
 
-download_files(){
+download_shadowsocks_libev(){
 # get shadowsocks-libev latest version
 if ! wget "${ss_libev_url}" -O "${tmp_dir}/${ss_libev}.zip"; then
         echo -e "${red}Error:${plain} Failed to download ${ss_libev}.zip"
@@ -60,16 +60,6 @@ fi
 # /etc/init.d/shadowsocks-libev
 if ! wget "${ss_libev_init_url}" -O "${ss_libev_init}"; then 
     echo -e "${red}Error:${plain} Failed to download ${ss_libev_init}"
-fi
-
-# /etc/security/limits.conf
-if ! wget "${limits_conf_url}" -O "${limits_conf}"; then 
-    echo -e "${red}Error:${plain} Failed to download ${limits_conf}"
-fi
-
-# /etc/sysctl.d/local.conf
-if ! wget "${sysctl_conf_url}" -O "${sysctl_conf}" && sysctl --system|sysctl -p; then 
-    echo -e "${red}Error:${plain} Failed to download ${sysctl_conf}"
 fi
 }
 
@@ -97,9 +87,25 @@ if [ $? -eq 0 ]; then
 fi
 }
 
+optimized_conf(){
+sed -i '$a\ulimit -SHn 65535' /etc/profile;
+
+# /etc/security/limits.conf
+if ! wget "${limits_conf_url}" -O "${limits_conf}"; then 
+    echo -e "${red}Error:${plain} Failed to download ${limits_conf}"
+fi
+
+# /etc/sysctl.d/local.conf
+if ! wget "${sysctl_conf_url}" -O "${sysctl_conf}" && sysctl --system|sysctl -p; then 
+    echo -e "${red}Error:${plain} Failed to download ${sysctl_conf}"
+fi
+echo -e "${red}over${plain}"
+}
+
 check_root
 set_timezone
 disable_selinux
-download_files
+download_shadowsocks_libev
 install_yum
 install_shadowsocks_libev
+optimized_conf
