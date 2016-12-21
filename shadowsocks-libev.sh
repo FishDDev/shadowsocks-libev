@@ -44,28 +44,27 @@ ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ntpdate 1.cn.pool.ntp.org
 }
 
+install_yum(){
+yum install -y unzip gzip openssl openssl-devel gcc swig python python-devel python-setuptools libtool libevent xmlto
+yum install -y autoconf automake make curl curl-devel zlib-devel perl perl-devel cpio expat-devel gettext-devel asciidoc
+}
+
 download_shadowsocks_libev(){
 # get shadowsocks-libev latest version
 if ! wget "${ss_libev_url}" -O "${tmp_dir}/${ss_libev}.zip"; then
+        rm -rf /var/root/tmp
         echo -e "${red}Error:${plain} Failed to download ${ss_libev}.zip"
         exit 1
 fi
-
 # /etc/shadowsocks-libev/config.json
 mkdir -p /etc/shadowsocks-libev
 if ! wget "${ss_libev_config_url}" -O "${ss_libev_config}"; then 
     echo -e "${red}Error:${plain} Failed to download ${ss_libev_config}"
 fi
-
 # /etc/init.d/shadowsocks-libev
 if ! wget "${ss_libev_init_url}" -O "${ss_libev_init}"; then 
     echo -e "${red}Error:${plain} Failed to download ${ss_libev_init}"
 fi
-}
-
-install_yum(){
-yum install -y unzip gzip openssl openssl-devel gcc swig python python-devel python-setuptools libtool libevent xmlto
-yum install -y autoconf automake make curl curl-devel zlib-devel perl perl-devel cpio expat-devel gettext-devel asciidoc
 }
 
 install_shadowsocks_libev() {
@@ -79,33 +78,33 @@ if [ $? -eq 0 ]; then
         chkconfig ${ss_libev} on
         ${ss_libev_init} start
         echo -e "${green}install successfully${plain}"
-        rm -rf /var/root/tmp
     else
-        echo
         echo -e "${red}${ss_libev}${plain} install failed."
-        rm -rf /var/root/tmp
 fi
 }
 
 optimized_conf(){
 sed -i '$a\ulimit -SHn 65535' /etc/profile;
-
 # /etc/security/limits.conf
 if ! wget "${limits_conf_url}" -O "${limits_conf}"; then 
     echo -e "${red}Error:${plain} Failed to download ${limits_conf}"
 fi
-
 # /etc/sysctl.d/local.conf
 if ! wget "${sysctl_conf_url}" -O "${sysctl_conf}" && sysctl --system|sysctl -p; then 
     echo -e "${red}Error:${plain} Failed to download ${sysctl_conf}"
 fi
-echo -e "${red}over${plain}"
+if [ $? -eq 0 ]; then
+       echo -e "${green}optimized config successfully${plain}"
+    else
+        echo -e "${red}optimized config${plain} install failed."
+fi
 }
 
 check_root
 set_timezone
 disable_selinux
-download_shadowsocks_libev
 install_yum
+download_shadowsocks_libev
 install_shadowsocks_libev
 optimized_conf
+rm -rf /var/root/tmp
