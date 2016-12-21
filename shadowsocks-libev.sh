@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# 2016-12-20 19:11
+# 2016-12-21 08:52
 #
 #     by:   fish
 # mailto:   fishdev@qq.com
@@ -72,6 +72,11 @@ if ! wget "${sysctl_conf_url}" -O "${sysctl_conf}" && sysctl --system|sysctl -p;
 fi
 }
 
+install_yum(){
+yum install -y unzip gzip openssl openssl-devel gcc swig python python-devel python-setuptools libtool libevent xmlto
+yum install -y autoconf automake make curl curl-devel zlib-devel perl perl-devel cpio expat-devel gettext-devel asciidoc
+}
+
 install_shadowsocks_libev() {
 cd /var/root/tmp
 unzip shadowsocks-libev.zip
@@ -95,4 +100,5 @@ check_root
 set_timezone
 disable_selinux
 download_files
+install_yum
 install_shadowsocks_libev
