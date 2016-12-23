@@ -76,7 +76,7 @@ if [ $? -ne 1 ];then
         echo "unzip ${shadowsocks_libev}.zip failed, please check unzip command."
 fi
 
-cd ${shadowsocks_libev}*
+cd shadowsocks*
 ./configure && make && make install
 if [ $? -eq 0 ]; then
         chmod +x ${shadowsocks_libev_init}
