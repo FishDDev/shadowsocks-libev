@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# 2016-12-21 08:52
+# 2016-12-24 03:33
 #
 #     by:   fish
 # mailto:   fishdev@qq.com
@@ -15,15 +15,15 @@ tmp_dir="/var/root/tmp"
 mkdir -p ${tmp_dir}
 
 #shadowsocks_libev
-ss_libev="shadowsocks-libev"
-ss_libev_init="/etc/init.d/shadowsocks-libev"
-ss_libev_config="/etc/shadowsocks-libev/config.json"
+shadowsocks_libev="shadowsocks-libev"
+shadowsocks_libev_init="/etc/init.d/shadowsocks-libev"
+shadowsocks_libev_config="/etc/shadowsocks-libev/config.json"
 limits_conf="/etc/security/limits.conf"
 sysctl_conf="/etc/sysctl.d/local.conf"
 
-ss_libev_url="https://codeload.github.com/shadowsocks/shadowsocks-libev/zip/master"
-ss_libev_init_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/init.d/shadowsocks-libev"
-ss_libev_config_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/shadowsocks-libev/config.json"
+shadowsocks_libev_url="https://codeload.github.com/shadowsocks/shadowsocks-libev/zip/master"
+shadowsocks_libev_init_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/init.d/shadowsocks-libev"
+shadowsocks_libev_config_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/shadowsocks-libev/config.json"
 limits_conf_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/security/limits.conf"
 sysctl_conf_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/sysctl.d/local.conf"
 
@@ -51,35 +51,41 @@ yum install -y autoconf automake make curl curl-devel zlib-devel perl perl-devel
 
 download_shadowsocks_libev(){
 # get shadowsocks-libev latest version
-if ! wget "${ss_libev_url}" -O "${tmp_dir}/${ss_libev}.zip"; then
-        rm -rf /var/root/tmp
-        echo -e "${red}Error:${plain} Failed to download ${ss_libev}.zip"
+if ! wget "${shadowsocks_libev_url}" -O "${tmp_dir}/${shadowsocks_libev}.zip"; then
+        rm -rf ${tmp_dir}
+        echo -e "${red}Error:${plain} Failed to download ${shadowsocks_libev}.zip"
         exit 1
 fi
 # /etc/shadowsocks-libev/config.json
 mkdir -p /etc/shadowsocks-libev
-if ! wget "${ss_libev_config_url}" -O "${ss_libev_config}"; then 
-    echo -e "${red}Error:${plain} Failed to download ${ss_libev_config}"
+if ! wget "${shadowsocks_libev_config_url}" -O "${shadowsocks_libev_config}"; then 
+    echo -e "${red}Error:${plain} Failed to download ${shadowsocks_libev_config}"
 fi
 # /etc/init.d/shadowsocks-libev
-if ! wget "${ss_libev_init_url}" -O "${ss_libev_init}"; then 
-    echo -e "${red}Error:${plain} Failed to download ${ss_libev_init}"
+if ! wget "${shadowsocks_libev_init_url}" -O "${shadowsocks_libev_init}"; then 
+    echo -e "${red}Error:${plain} Failed to download ${shadowsocks_libev_init}"
 fi
 }
 
 install_shadowsocks_libev() {
-cd /var/root/tmp
-unzip shadowsocks-libev.zip
-cd /var/root/tmp/shadowsocks-libev-master
+cd ${tmp_dir}
+unzip -q ${shadowsocks_libev}.zip
+if [ $? -ne 1 ];then
+        rm -rf ${shadowsocks_libev}.zip
+    else
+        echo "unzip ${shadowsocks_libev}.zip failed, please check unzip command."
+fi
+
+cd ${shadowsocks_libev}*
 ./configure && make && make install
 if [ $? -eq 0 ]; then
-        chmod +x ${ss_libev_init}
-        chkconfig --add ${ss_libev}
-        chkconfig ${ss_libev} on
-        ${ss_libev_init} start
+        chmod +x ${shadowsocks_libev_init}
+        chkconfig --add ${shadowsocks_libev}
+        chkconfig ${shadowsocks_libev} on
+        ${shadowsocks_libev_init} start
         echo -e "${green}install successfully${plain}"
     else
-        echo -e "${red}${ss_libev}${plain} install failed."
+        echo -e "${red}${shadowsocks_libev}${plain} install failed."
 fi
 }
 
