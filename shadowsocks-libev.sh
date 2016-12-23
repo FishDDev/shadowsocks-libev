@@ -49,6 +49,23 @@ yum install -y unzip gzip openssl openssl-devel gcc swig python python-devel pyt
 yum install -y autoconf automake make curl curl-devel zlib-devel perl perl-devel cpio expat-devel gettext-devel asciidoc
 }
 
+optimized_conf(){
+sed -i '$a\ulimit -SHn 65535' /etc/profile;
+# /etc/security/limits.conf
+if ! wget "${limits_conf_url}" -O "${limits_conf}"; then 
+    echo -e "${red}Error:${plain} Failed to download ${limits_conf}"
+fi
+# /etc/sysctl.d/local.conf
+if ! wget "${sysctl_conf_url}" -O "${sysctl_conf}" && sysctl --system|sysctl -p; then 
+    echo -e "${red}Error:${plain} Failed to download ${sysctl_conf}"
+fi
+if [ $? -eq 0 ]; then
+       echo -e "${green}optimized config successfully${plain}"
+    else
+        echo -e "${red}optimized config${plain} install failed."
+fi
+}
+
 download_shadowsocks_libev(){
 # get shadowsocks-libev latest version
 if ! wget "${shadowsocks_libev_url}" -O "${tmp_dir}/${shadowsocks_libev}.zip"; then
@@ -89,28 +106,12 @@ if [ $? -eq 0 ]; then
 fi
 }
 
-optimized_conf(){
-sed -i '$a\ulimit -SHn 65535' /etc/profile;
-# /etc/security/limits.conf
-if ! wget "${limits_conf_url}" -O "${limits_conf}"; then 
-    echo -e "${red}Error:${plain} Failed to download ${limits_conf}"
-fi
-# /etc/sysctl.d/local.conf
-if ! wget "${sysctl_conf_url}" -O "${sysctl_conf}" && sysctl --system|sysctl -p; then 
-    echo -e "${red}Error:${plain} Failed to download ${sysctl_conf}"
-fi
-if [ $? -eq 0 ]; then
-       echo -e "${green}optimized config successfully${plain}"
-    else
-        echo -e "${red}optimized config${plain} install failed."
-fi
-}
 
 check_root
 set_timezone
 disable_selinux
 install_yum
+optimized_conf
 download_shadowsocks_libev
 install_shadowsocks_libev
-optimized_conf
 rm -rf /var/root/tmp
