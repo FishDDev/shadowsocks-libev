@@ -19,13 +19,13 @@ shadowsocks_libev="shadowsocks-libev"
 shadowsocks_libev_init="/etc/init.d/shadowsocks-libev"
 shadowsocks_libev_config="/etc/shadowsocks-libev/config.json"
 limits_conf="/etc/security/limits.conf"
-sysctl_conf="/etc/sysctl.d/local.conf"
+sysctl_conf="/etc/sysctl.conf"
 
 shadowsocks_libev_url="https://codeload.github.com/shadowsocks/shadowsocks-libev/zip/master"
 shadowsocks_libev_init_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/init.d/shadowsocks-libev"
 shadowsocks_libev_config_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/shadowsocks-libev/config.json"
 limits_conf_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/security/limits.conf"
-sysctl_conf_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/sysctl.d/local.conf"
+sysctl_conf_url="https://raw.githubusercontent.com/FishDDev/shadowsocks-libev/master/etc/sysctl.conf"
 
 check_root(){
 [[ $EUID -ne 0 ]] && echo -e "${red}Error:${plain} This script must be run as root!" && exit 1
